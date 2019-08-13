@@ -60,13 +60,11 @@ pub fn write_bare_double<W>(dst: &mut W, value: f64) -> Result<()>
 }
 
 #[inline]
-pub fn write_bare_byte_array<W>(dst: &mut W, value: &[i8]) -> Result<()>
+pub fn write_bare_byte_array<W>(dst: &mut W, value: &[u8]) -> Result<()>
    where W: io::Write
 {
     try!(dst.write_i32::<BigEndian>(value.len() as i32));
-    for &v in value {
-        try!(dst.write_i8(v));
-    }
+    try!(dst.write(value));
     Ok(())
 }
 
@@ -162,17 +160,13 @@ pub fn read_bare_double<R>(src: &mut R) -> Result<f64>
 }
 
 #[inline]
-pub fn read_bare_byte_array<R>(src: &mut R) -> Result<Vec<i8>>
+pub fn read_bare_byte_array<R>(src: &mut R) -> Result<Vec<u8>>
     where R: io::Read
 {
-    // FIXME: Is there a way to return [u8; len]?
     let len = try!(src.read_i32::<BigEndian>()) as usize;
-    let mut buf = Vec::with_capacity(len);
-    // FIXME: Test performance vs transmute.
-    for _ in 0..len {
-        buf.push(try!(src.read_i8()));
-    }
-    Ok(buf)
+    let mut vec = vec![0u8; len];
+    src.read_exact(&mut vec[..])?;
+    Ok(vec)
 }
 
 #[inline]

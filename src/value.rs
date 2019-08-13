@@ -19,7 +19,7 @@ pub enum Value {
     Long(i64),
     Float(f32),
     Double(f64),
-    ByteArray(Vec<i8>),
+    ByteArray(Vec<u8>),
     String(String),
     List(Vec<Value>),
     Compound(HashMap<String, Value>),
@@ -230,12 +230,12 @@ impl From<String> for Value {
     fn from(t: String) -> Value { Value::String(t) }
 }
 
-impl From<Vec<i8>> for Value {
-    fn from(t: Vec<i8>) -> Value { Value::ByteArray(t) }
+impl From<Vec<u8>> for Value {
+    fn from(t: Vec<u8>) -> Value { Value::ByteArray(t) }
 }
 
-impl<'a> From<&'a [i8]> for Value {
-    fn from(t: &'a [i8]) -> Value { Value::ByteArray(t.into()) }
+impl<'a> From<&'a [u8]> for Value {
+    fn from(t: &'a [u8]) -> Value { Value::ByteArray(t.into()) }
 }
 
 impl From<Vec<i32>> for Value {

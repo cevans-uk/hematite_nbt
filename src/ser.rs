@@ -293,14 +293,15 @@ impl<'a, 'b, W> serde::Serializer for &'a mut InnerEncoder<'a, 'b, W> where W: i
     }
 
     #[inline]
-    fn serialize_str(self, value: &str) -> Result<()> {
-        raw::write_bare_string(&mut self.outer.writer, value)
+    fn serialize_bytes(self, value: &[u8]) -> Result<()> {
+        raw::write_bare_byte_array(&mut self.outer.writer, value)
             .map_err(From::from)
     }
 
     #[inline]
-    fn serialize_bytes(self, _value: &[u8]) -> Result<()> {
-        Err(Error::UnrepresentableType("u8"))
+    fn serialize_str(self, value: &str) -> Result<()> {
+        raw::write_bare_string(&mut self.outer.writer, value)
+            .map_err(From::from)
     }
 
     #[inline]
@@ -473,13 +474,13 @@ where W: io::Write,
     }
 
     #[inline]
-    fn serialize_str(self, _value: &str) -> Result<()> {
-        self.write_header(0x08)
+    fn serialize_bytes(self, _value: &[u8]) -> Result<()> {
+        self.write_header(0x07)
     }
 
     #[inline]
-    fn serialize_bytes(self, _value: &[u8]) -> Result<()> {
-        Err(Error::UnrepresentableType("u8"))
+    fn serialize_str(self, _value: &str) -> Result<()> {
+        self.write_header(0x08)
     }
 
     #[inline]
